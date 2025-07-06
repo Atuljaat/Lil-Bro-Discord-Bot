@@ -14,7 +14,11 @@ const token = process.env.BOT_TOKEN;
 const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [
+	GatewayIntentBits.Guilds , 
+	GatewayIntentBits.GuildMessages,
+	GatewayIntentBits.MessageContent
+] });
 
 client.commands = new Collection();
 
@@ -64,6 +68,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
 		}
 	}
 });
+
+const messageCreateHandler = require('./events/Message');
+client.on(messageCreateHandler.name, (...args) => messageCreateHandler.execute(...args));
 
 client.once(Events.ClientReady, (readyClient) => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);

@@ -1,39 +1,39 @@
-// import { GoogleGenAI } from "@google/genai";
-// import { SlashCommandBuilder } from 'discord.js';
-// const ai = new GoogleGenAI({});
+const { GoogleGenAI } = require('@google/genai');
+const { SlashCommandBuilder } = require('discord.js');
 
-// module.exports = {
-//     data : new SlashCommandBuilder()
-//     .setName('chat')
-//     .setDescription('chat with the bot')
-//     .addStringOption( option => 
-//         option.setName('question')
-//         .setDescription('What you want to ask ? ')
-//         .setRequired(true)
-//      )
-//     ,
-//     async execute(interaction) {
-//         try {
-//             const question = interaction.options.getString('question');
-//             const response = await main(question)
-//             interaction.reply(response)
-//         } catch (error) {
-//             interaction.reply('Right now , I dont want to talk anyone sorry ')
-//         }
-//     },
-// }
+const Apis = require('../../Api');
 
+const ai = new GoogleGenAI({
+  apiKey : Apis.GeminiKey
+});
 
+async function main(message) {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: ` Reply the message a sweet tone no extra stuff just reply this =>  : ${message} `,
+  });
+  return response.text
+}
 
-
-// // The client gets the API key from the environment variable `GEMINI_API_KEY`.
-
-// async function main(message) {
-//   const response = await ai.models.generateContent({
-//     model: "gemini-2.5-flash",
-//     contents: ` Reply the message a sweet tone  : ${message} `,
-//   });
-//   return response.text
-// }
-
-// main();
+module.exports = {
+    data : new SlashCommandBuilder()
+    .setName('chat')
+    .setDescription('chat with the bot')
+    .addStringOption( option => 
+        option.setName('message')
+        .setDescription('wanna talk  ')
+        .setRequired(true)
+     )
+    ,
+    async execute(interaction) {
+        const userMsg = interaction.options.getString('message');
+        try {
+            await interaction.deferReply();
+            const response = await main(userMsg);
+            await interaction.editReply(String(response));
+        } catch (error) {
+            console.log(error)
+            await interaction.followUp('Right now , I dont want to talk anyone sorry ')
+        }
+    },
+}

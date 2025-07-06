@@ -1,13 +1,22 @@
-require('dotenv').config();
-const { REST } = require('discord.js');
+const { GoogleGenAI } = require('@google/genai');
+const { SlashCommandBuilder } = require('discord.js');
 
-const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
+require("dotenv").config();
 
-(async () => {
-  try {
-    const appData = await rest.get('/users/@me');
-    console.log('Token works! Bot name:', appData.username);
-  } catch (err) {
-    console.error('❌ Invalid token:', err);
-  }
-})();
+// The client gets the API key from the environment variable `GEMINI_API_KEY`.
+
+const apiKey = process.env.GEMINI_API_KEY
+
+const ai = new GoogleGenAI({
+  apiKey : apiKey
+});
+
+async function main() {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: "Explain how AI works in a few words",
+  });
+  console.log(response.text);
+}
+
+main();
