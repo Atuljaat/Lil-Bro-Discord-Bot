@@ -20,6 +20,10 @@ const client = new Client({ intents: [
 	GatewayIntentBits.MessageContent
 ] });
 
+
+
+module.exports = client;
+
 client.commands = new Collection();
 
 for (const folder of commandFolders) {
@@ -71,6 +75,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 const messageCreateHandler = require('./events/Message');
 client.on(messageCreateHandler.name, (...args) => messageCreateHandler.execute(...args));
+
+const messageCount = require('./events/MessageCount');
+client.on(messageCount.name , (...args) => messageCount.execute(...args) )
+
+const wishes = require('./crons/Wishes')
+client.once('ready' , () => {
+	wishes(client)
+})
+
+
 
 client.once(Events.ClientReady, (readyClient) => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
