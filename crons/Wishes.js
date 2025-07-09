@@ -16,7 +16,7 @@ const getChannels = async () => {
 
 const wishes = (client) => {
     cron.schedule("0 0,6,12,18,22 * * *", async () => {
-        const hour = new Date().getHours();
+        const hour = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata", hour: "2-digit", hour12: false });
         let message = "";
         if (hour === 0) {
             message =
@@ -52,7 +52,11 @@ const wishes = (client) => {
         } catch (err) {
             console.log("Error in sending the cron message");
         }
-    });
+    } , 
+        {
+            timezone: "Asia/Kolkata"
+        }
+);
 };
 
 module.exports = wishes;
